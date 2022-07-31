@@ -118,9 +118,19 @@ services:
       - rabbitmq
     ports:
       - "8004:80"
+  
+  ocelotapigw:
+    container_name: ocelotapigw
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    depends_on:
+      - catalog.api
+      - basket.api
+      - discount.api
+      - ordering.api
+    ports:
+      - "8010:80"
 
-
-
-    #docker run -e "ASPNETCORE_ENVIRONMENT=Development" -e 
-    #"CacheSettings:ConnectionString=localhost:6379" -p 
-    #127.0.0.1:8001:80 demo007.azurecr.io/shoppingcart/basket:v1
+  #docker run -e "ASPNETCORE_ENVIRONMENT=Development" -e 
+  #"CacheSettings:ConnectionString=localhost:6379" -p 
+  #127.0.0.1:8001:80 demo007.azurecr.io/shoppingcart/basket:v1

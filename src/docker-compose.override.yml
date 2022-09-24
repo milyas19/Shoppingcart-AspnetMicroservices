@@ -68,7 +68,7 @@ services:
     container_name: catalog.api
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - "DatabaseSettings:ConnectionString=mongodb://catalogdb:27017"
+      - "ConnectionString=mongodb://catalogdb:27017"
     depends_on:
       - catalogdb
     ports:
@@ -145,6 +145,20 @@ services:
     ports:
       - "8005:80"
 
-  #docker run -e "ASPNETCORE_ENVIRONMENT=Development" -e 
-  #"CacheSettings:ConnectionString=localhost:6379" -p 
-  #127.0.0.1:8001:80 demo007.azurecr.io/shoppingcart/basket:v1
+  aspnetrunbasics:
+    container_name: aspnetrunbasics
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - "ApiSettings:GatewayAddress=http://ocelotapigw"
+    depends_on:
+      - ocelotapigw
+      - catalog.api
+      - basket.api
+      - discount.api
+      - ordering.api
+    ports:
+      - "8006:80"
+
+    #docker run -e "ASPNETCORE_ENVIRONMENT=Development" -e 
+    #"CacheSettings:ConnectionString=localhost:6379" -p 
+    #127.0.0.1:8001:80 demo007.azurecr.io/shoppingcart/basket:v1

@@ -12,7 +12,7 @@ namespace Catalog.API.Data
     {
         public CatalogContext(IConfiguration config)
         {
-            var client = new MongoClient(config.GetValue<string>("DatabaseSettings:ConnectionString"));
+            var client = new MongoClient(config.GetValue<string>("ConnectionString"));
             var database = client.GetDatabase(config.GetValue<string>("DatabaseSettings:DatabaseName"));
 
             Products = database.GetCollection<Product>(config.GetValue<string>("DatabaseSettings:CollectionName"));

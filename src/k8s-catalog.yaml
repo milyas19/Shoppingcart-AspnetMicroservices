@@ -1,0 +1,97 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: catalogdb
+  namespace: microservices
+  labels:
+    name: catalogdb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: catalogdb
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        name: catalogdb
+    spec:
+      containers:
+      - name: catalogdb
+        image: mongo
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+          - containerPort: 27017
+
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name:  catalogdb-service
+  namespace: microservices
+spec:
+  selector:
+    name:  catalogdb
+  ports:
+  - name:  catalogdb-port
+    port:  27017
+    targetPort:  27017
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: catalog-api
+  namespace: microservices
+  labels:
+    service.name: catalog-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      service.name: catalog-api
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        service.name: catalog-api
+    spec:
+      containers:
+      - name: catalog-api
+        image: microservices/catalog
+        imagePullPolicy: Never
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        env:
+          - name:  ASPNETCORE_ENVIRONMENT
+            value: "Development"
+          - name: ConnectionString
+            value: "mongodb://catalogdb-service:27017"
+        ports:
+          - containerPort: 80
+      restartPolicy: Always
+
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name:  catalog-api-service
+  namespace: microservices
+spec:
+  selector:
+    service.name:  catalog-api
+  type:  LoadBalancer
+  ports:
+  - name:  catalog-api-port
+    port:  8000
+    targetPort:  80
+
+
